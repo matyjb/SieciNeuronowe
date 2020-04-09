@@ -36,9 +36,10 @@ class PerceptronAlgZgrupowany:
     yk = np.array([self.f(np.dot(self.xk[i], self.w)) for i in range(len(self.xk))])
 
     # obliczanie sumy źle rozpoznanych wektorów przez wagę w
-    signs = self.dk - yk # zawiera wartości: -1 0 lub 1
-    s = np.sum([signs[i] * self.xk[i] for i in range(len(signs))], axis=0)
-
+    scalars = self.dk - yk # zawiera wartości: -1 0 lub 1
+    # liniowa kombinacja wektorów
+    # s = np.sum([scalars[i] * self.xk[i] for i in range(len(scalars))], axis=0)
+    s = np.dot(scalars, self.xk)
     # obliczanie nowej wagi
     self.w = self.w + self.c * s
     print("cykl="+str(self.cycle)+" nowa waga: "+ str(self.w))
