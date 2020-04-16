@@ -1,5 +1,7 @@
 import numpy as np
 
+DEBUG = True
+
 class Perceptron:
   def __init__(self, xk, dk, w0, r, f):
     self.xk = xk
@@ -20,7 +22,12 @@ class Perceptron:
     
     # obliczanie nowej wagi
     self.w = self.w + self.r * (d - y) * x
-    
+
+  def learn(self):
+    for i in range(12):
+      self.learningStep()
+      if DEBUG:
+        print("k="+str(self.k)+" nowa waga: "+ str(self.w))
 
 class PerceptronAlgZgrupowany:
   def __init__(self, xk, dk, w0, c, f):
@@ -45,6 +52,12 @@ class PerceptronAlgZgrupowany:
     # obliczanie nowej wagi
     self.w = self.w + self.c * s
 
+  def learn(self):
+    for i in range(6):
+      self.learningStep()
+      if DEBUG:
+        print("cykl="+str(self.cycle)+" nowa waga: "+ str(self.w))
+
 
 w0 = np.array([1,1,1])
 r = 1
@@ -59,14 +72,10 @@ xk = np.array([[1,0,0],[1,0,1],[1,1,0],[1,1,1]])
 # dk = [0,0,1,0]
 # xk = np.array([[1,0,0],[1,1,0],[1,1,1],[1,0,1]])
 
+
+print("----algorytm 1----")
 p0 = Perceptron(xk,dk,w0,r,f)
-for i in range(10):
-  p0.learningStep()
-  print("k="+str(p0.k)+" nowa waga: "+ str(p0.w))
-
+p0.learn()
 print("----algorytm zgrupowany----")
-
 p1 = PerceptronAlgZgrupowany(xk,dk,w0,r,f)
-for i in range(6):
-  p1.learningStep()
-  print("cykl="+str(p1.cycle)+" nowa waga: "+ str(p1.w))
+p1.learn()
