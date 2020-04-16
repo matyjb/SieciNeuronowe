@@ -1,5 +1,8 @@
 import numpy as np
 
+# klasa dynamiczna bo pewnie w projekt cz3 bedzie nauczanie tej sieci
+# bo to w cz2 to mozna za pomocą funkcji zrobić
+# (przekazać do calc() te parametry: w, g, b)
 class HopfieldAsync:
 
   def __init__(self, w, g, b):
@@ -7,13 +10,13 @@ class HopfieldAsync:
     self.g = g
     self.b = b
 
+  # wylicza ?klasyfikacje? zadanego wektora
   def calc(self, x):
     v = np.copy(x)
     n = len(v)
     u = np.zeros(n)
 
     for i in range(n):
-      # tmp = 
       u[i] = sum([v[j]*self.w[i,j]-b[j] for j in range(n)])
       v[i] = self.g(u[i])
     
@@ -21,20 +24,19 @@ class HopfieldAsync:
       return self.calc(v)
     else:
       return v
-  
-  def isStablePoint(self,x):
-    xx = self.calc(x)
-    return (xx == x).all()
 
+
+# funkcja pomocnicza do wyswietlenia wynikow zadania
 def exec(x,w,b,g):
   h = HopfieldAsync(w, g, b)
 
   for i in range(len(x)):
-    xx = x[i]
-    if h.isStablePoint(xx):
-      print(str(xx) + " => " + str(h.calc(xx)) + " punkt stały!")
+    xIn = x[i]
+    xOut = h.calc(xIn)
+    if (xIn == xOut).all():
+      print(str(xIn) + " => " + str(xOut) + " punkt stały!")
     else:
-      print(str(xx) + " => " + str(h.calc(xx)))
+      print(str(xIn) + " => " + str(xOut))
 
 
 print("---przykład z notatek---")
