@@ -4,7 +4,7 @@ import itertools
 
 # klasa dynamiczna bo pewnie w projekt cz3 bedzie nauczanie tej sieci
 # bo to w cz2 to mozna za pomocą funkcji zrobić
-# (przekazać do calc() te parametry: w, g, b)
+# (przekazać do classify() te parametry: w, g, b)
 class HopfieldAsync:
 
   def __init__(self, w, g, b):
@@ -12,8 +12,8 @@ class HopfieldAsync:
     self.g = g
     self.b = b
 
-  # wylicza ?klasyfikacje? zadanego wektora
-  def calc(self, x):
+  # wylicza ?klasyfikacje? zadanego wektora i numer (czas) iteracji
+  def classify(self, x, t=0):
     v = np.copy(x)
     n = len(v)
     u = np.zeros(n)
@@ -22,23 +22,21 @@ class HopfieldAsync:
       u[i] = sum([v[j]*self.w[i,j]-b[j] for j in range(n)])
       v[i] = self.g(u[i])
     
-    if (v != x).all():
-      return self.calc(v)
+    if not (v == x).all():
+      return self.classify(v, t+1)
     else:
-      return v
-
+      return (v,t)
 
 # funkcja pomocnicza do wyswietlenia wynikow zadania
 def exec(x,w,b,g):
   h = HopfieldAsync(w, g, b)
-
   for i in range(len(x)):
     xIn = x[i]
-    xOut = h.calc(xIn)
-    if (xIn == xOut).all():
-      print(str(xIn) + " => " + str(xOut) + " punkt stały!")
+    (xOut,t) = h.classify(xIn)
+    if t == 0:
+      print(str(xIn) + " => " + str(xOut) + " t=" + str(t) + " punkt stały!")
     else:
-      print(str(xIn) + " => " + str(xOut))
+      print(str(xIn) + " => " + str(xOut) + " t=" + str(t))
 
 # generuje wszystkie kombinacje wektora o n długości
 # i dwóch mozliwych wartościach
@@ -52,12 +50,13 @@ b = np.array([0,0])
 g = lambda x: 1 if x > 0 else 0
 exec(x,w,b,g)
 
-print("---przykład z ZadRozwiazaniaHopfield.pdf str 9---")
-w = np.array([[-1,3/4],[3/4,0]])
-x = genxs(2,0,1)
-b = np.array([0,0])
-g = lambda x: 1 if x >= 0 else 0
-exec(x,w,b,g)
+# to psuje
+# print("---przykład z ZadRozwiazaniaHopfield.pdf str 9---")
+# w = np.array([[-1,3/4],[3/4,0]])
+# x = genxs(2,0,1)
+# b = np.array([0,0])
+# g = lambda x: 1 if x >= 0 else 0
+# exec(x,w,b,g)
 
 print("---przykład z ZadRozwiazaniaHopfield.pdf str 13---")
 w = np.array([[0,1,-1],[1,0,1],[-1,1,0]])
@@ -73,3 +72,4 @@ x = genxs(3,-1,1)
 b = np.array([0,0,0])
 g = lambda x: 1 if x > 0 else -1
 exec(x,w,b,g)
+
