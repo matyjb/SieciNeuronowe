@@ -6,6 +6,10 @@ class Perceptron:
     self.r = r
     self.f = f
 
+  def classify(self,x):
+    xw = np.dot(x,self.w)
+    return self.f(xw)
+
   # uczy perceptron przy pomocy listy wektorów xk i wektora dk
   # grouped - czy użyć algorytmu zgrupowanego
   # debug - czy printowac nowe wagi w kazdych krokach

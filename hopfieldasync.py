@@ -84,6 +84,7 @@ def genxs(n, v1, v2):
 g = lambda x: 1 if x > 0 else -1
 # exec(x,w,b,g)
 
+# jakiś przykładzik z internetu
 h = HopfieldAsync(g=g)
 # trzy obrazy 3x3 (kółko, krzyzyk, puste):
 # C C C | C B C | B B B
