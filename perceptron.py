@@ -19,7 +19,7 @@ class Perceptron:
     oldw = np.copy(self.w)
     if(grouped):
       # wyznaczanie wartości y (w postaci wektora)
-      yk = np.array([self.f(np.dot(xk[i], self.w)) for i in range(N)])
+      yk = np.array([self.classify(xk[i]) for i in range(N)])
       # obliczanie sumy źle rozpoznanych wektorów przez wagę w
       scalars = dk - yk # zawiera wartości: -1 0 lub 1
       ## kombinacja liniowa wektorów xk

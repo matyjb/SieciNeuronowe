@@ -3,9 +3,9 @@ import itertools
 
 class HopfieldAsync:
 
-  def __init__(self, w=[], g=None, b=[]):
+  def __init__(self, f=None, w=[], b=[]):
     self.w = w
-    self.g = g
+    self.f = f
     self.b = b
 
   # wylicza ?klasyfikacje? zadanego wektora i numer (czas) iteracji
@@ -16,7 +16,7 @@ class HopfieldAsync:
 
     for i in range(n):
       u[i] = sum([v[j]*self.w[i,j]-self.b[j] for j in range(n)])
-      v[i] = self.g(u[i])
+      v[i] = self.f(u[i])
     
     if not (v == x).all():
       return self.classify(v, t+1)
@@ -34,12 +34,12 @@ class HopfieldAsync:
       for j in range(N):
         if(i!=j):
           neww[i,j] = sum([xk[k,i] * xk[k,j] for k in range(K)])
-    self.w = np.array(neww) / N
+    self.w = neww / N
     self.b = np.zeros(N)
 
 # funkcja pomocnicza do wyswietlenia wynikow zadania
-def exec(x,w,b,g):
-  h = HopfieldAsync(w, g, b)
+def exec(x,f,w,b):
+  h = HopfieldAsync(f, w, b)
   for i in range(len(x)):
     xIn = x[i]
     (xOut,t) = h.classify(xIn)
@@ -55,37 +55,37 @@ def genxs(n, v1, v2):
   return np.array([list(i) for i in itertools.product([v1, v2], repeat=n)])
 
 # print("---przykład z notatek---")
-# w = np.array([[0,1],[1,0]])
-# x = genxs(2,0,1)
-# b = np.array([0,0])
-# g = lambda x: 1 if x > 0 else 0
-# exec(x,w,b,g)
+w = np.array([[0,1],[1,0]])
+x = genxs(2,0,1)
+b = np.array([0,0])
+f = lambda x: 1 if x > 0 else 0
+exec(x,f,w,b)
 
 # to psuje
 # print("---przykład z ZadRozwiazaniaHopfield.pdf str 9---")
 # w = np.array([[-1,3/4],[3/4,0]])
 # x = genxs(2,0,1)
 # b = np.array([0,0])
-# g = lambda x: 1 if x >= 0 else 0
-# exec(x,w,b,g)
+# f = lambda x: 1 if x >= 0 else 0
+# exec(x,f,w,b)
 
-# print("---przykład z ZadRozwiazaniaHopfield.pdf str 13---")
-# w = np.array([[0,1,-1],[1,0,1],[-1,1,0]])
-# x = genxs(3,0,1)
-# b = np.array([0,0,0])
-# g = lambda x: 1 if x > 0 else 0
-# exec(x,w,b,g)
+print("---przykład z ZadRozwiazaniaHopfield.pdf str 13---")
+w = np.array([[0,1,-1],[1,0,1],[-1,1,0]])
+x = genxs(3,0,1)
+b = np.array([0,0,0])
+f = lambda x: 1 if x > 0 else 0
+exec(x,f,w,b)
 
-# print("---projekt---")
-# c = 2/3
-# w = np.array([[0,-c,c],[-c,0,-c],[c,-c,0]])
-# x = genxs(3,-1,1)
-# b = np.array([0,0,0])
-g = lambda x: 1 if x > 0 else -1
-# exec(x,w,b,g)
+print("---projekt---")
+c = 2/3
+w = np.array([[0,-c,c],[-c,0,-c],[c,-c,0]])
+x = genxs(3,-1,1)
+b = np.array([0,0,0])
+f = lambda x: 1 if x > 0 else -1
+exec(x,f,w,b)
 
-# jakiś przykładzik z internetu
-h = HopfieldAsync(g=g)
+print("---przykładzik z internetu z tic tac toe---")
+h = HopfieldAsync(f=f)
 # trzy obrazy 3x3 (kółko, krzyzyk, puste):
 # C C C | C B C | B B B
 # C B C | B C B | B B B
