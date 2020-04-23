@@ -1,50 +1,44 @@
 import numpy as np
 
 class Perceptron:
-  def __init__(self, xk, dk, w0, r, f):
-    self.xk = xk
-    self.dk = dk
-    self.w = w0
+  def __init__(self, f, w=[], r=1):
+    self.w = w
     self.r = r
     self.f = f
-    self.k = -1
 
-  def learningStep(self):
-    # zinkrementuj indeks k
-    self.k = (self.k + 1) % len(self.xk)
-
-    x = self.xk[self.k]
-    d = self.dk[self.k]
-
-    y = self.f(np.dot(x, self.w))
+  # uczy perceptron przy pomocy listy wektorów xk i wektora dk
+  # grouped - czy użyć algorytmu zgrupowanego
+  # debug - czy printowac nowe wagi w kazdych krokach
+  # zwraca ilość cykli, która zajęła by ustabilizować wagi
+  def learn(self, xk, dk, grouped=False, t=0, debug=False):
+    N = len(xk)
+    oldw = np.copy(self.w)
+    if(grouped):
+      # wyznaczanie wartości y (w postaci wektora)
+      yk = np.array([self.f(np.dot(xk[i], self.w)) for i in range(N)])
+      # obliczanie sumy źle rozpoznanych wektorów przez wagę w
+      scalars = dk - yk # zawiera wartości: -1 0 lub 1
+      ## kombinacja liniowa wektorów xk
+      s = np.dot(scalars, xk)
+      # obliczanie nowej wagi
+      self.w = self.w + self.r * s
+    else:
+      for k in range(N):
+        x = xk[k]
+        d = dk[k]
+        y = self.f(np.dot(x, self.w))
+        # obliczanie nowej wagi
+        self.w = self.w + self.r * (d - y) * x
+        if(debug):
+          print("k="+str(k)+" nowa waga: "+ str(self.w))
     
-    # obliczanie nowej wagi
-    self.w = self.w + self.r * (d - y) * x
+    print("t="+str(t)+" nowa waga: "+ str(self.w))
+    if (self.w == oldw).all():
+      # wagi nie zmieniły się od poprzedniego cyklu czyli koniec uczenia
+      return t
+    else:
+      return self.learn(xk,dk,grouped,t+1,debug)
     
-
-class PerceptronAlgZgrupowany:
-  def __init__(self, xk, dk, w0, c, f):
-    self.xk = xk
-    self.dk = dk
-    self.w = w0
-    self.c = c
-    self.f = f
-    self.cycle = 0
-
-  def learningStep(self):
-    self.cycle += 1
-    # wyznaczanie wartości y (w postaci wektora)
-    yk = np.array([self.f(np.dot(self.xk[i], self.w)) for i in range(len(self.xk))])
-
-    # obliczanie sumy źle rozpoznanych wektorów przez wagę w
-    scalars = self.dk - yk # zawiera wartości: -1 0 lub 1
-    ## kombinacja liniowa wektorów xk
-    # s = np.sum([scalars[i] * self.xk[i] for i in range(len(scalars))], axis=0)
-    s = np.dot(scalars, self.xk)
-
-    # obliczanie nowej wagi
-    self.w = self.w + self.c * s
-
 
 w0 = np.array([1,1,1])
 r = 1
@@ -59,14 +53,10 @@ xk = np.array([[1,0,0],[1,0,1],[1,1,0],[1,1,1]])
 # dk = [0,0,1,0]
 # xk = np.array([[1,0,0],[1,1,0],[1,1,1],[1,0,1]])
 
-p0 = Perceptron(xk,dk,w0,r,f)
-for i in range(10):
-  p0.learningStep()
-  print("k="+str(p0.k)+" nowa waga: "+ str(p0.w))
+p0 = Perceptron(f,w0,r)
+p0.learn(xk,dk)
 
 print("----algorytm zgrupowany----")
 
-p1 = PerceptronAlgZgrupowany(xk,dk,w0,r,f)
-for i in range(6):
-  p1.learningStep()
-  print("cykl="+str(p1.cycle)+" nowa waga: "+ str(p1.w))
+p1 = Perceptron(f,w0,r)
+p1.learn(xk,dk,grouped=True)
