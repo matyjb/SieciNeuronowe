@@ -10,10 +10,17 @@ class NeuralNetwork:
     # for i in ns[1:]:
     #   for j in range(i):
     #     w = np.random.rand(ns[i-1]) / 3 # wektor wag wartości nie przekraczjących 0.(3)
+  
+  def classify(self,x):
+    xx = np.copy(x)
+    for layer in self.network:
+      xx = np.array([p.classify(xx) for p in layer])
+    return xx
         
 
 nn = NeuralNetwork([3,2,1])
 print(nn.network)
+print(nn.classify(np.array([2,2,2])))
 
 
 
