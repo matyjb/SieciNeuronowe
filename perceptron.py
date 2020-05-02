@@ -42,4 +42,9 @@ class Perceptron:
       return t
     else:
       return self.learn(xk,dk,grouped,t+1,debug)
+
+  def __repr__(self):
+    return "Perceptron " + str(np.size(self.w)) + " (" + str(self.r) + ")"
+  def __str__(self):
+    return "Perceptron " + str(np.size(self.w)) + " (" + str(self.r) + ")"
    
