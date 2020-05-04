@@ -47,5 +47,5 @@ class Perceptron:
   def __repr__(self):
     return "Perceptron wejścia: " + str(np.size(self.w)) + " (bias = " + str(self.r) + ")"
   def __str__(self):
-    return "Perceptron " + str(np.size(self.w)) + " (" + str(self.r) + ")"
+    return self.__repr__()
    
