@@ -14,7 +14,7 @@ class Perceptron:
   # grouped - czy użyć algorytmu zgrupowanego
   # debug - czy printowac nowe wagi w kazdych krokach
   # zwraca ilość cykli, która zajęła by ustabilizować wagi
-  def learn(self, xk, dk, grouped=False, t=0, debug=False):
+  def learn(self, xk, dk, grouped=False, t=0, debug=False, maxCycles=np.Inf):
     N = len(xk)
     oldw = np.copy(self.w)
     if(grouped):
@@ -37,14 +37,15 @@ class Perceptron:
           print("k="+str(k)+" nowa waga: "+ str(self.w))
     
     print("t="+str(t)+" nowa waga: "+ str(self.w))
-    if (self.w == oldw).all():
+    if (self.w == oldw).all() or maxCycles==1:
       # wagi nie zmieniły się od poprzedniego cyklu czyli koniec uczenia
+      # lub został osiągnięty limit cykli
       return t
     else:
-      return self.learn(xk,dk,grouped,t+1,debug)
+      return self.learn(xk,dk,grouped,t+1,debug, maxCycles-1)
 
   def __repr__(self):
-    return "Perceptron " + str(np.size(self.w)) + " (" + str(self.r) + ")"
+    return "Perceptron wejścia: " + str(np.size(self.w)) + " (bias = " + str(self.r) + ")"
   def __str__(self):
     return "Perceptron " + str(np.size(self.w)) + " (" + str(self.r) + ")"
    
