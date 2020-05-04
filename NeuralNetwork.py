@@ -29,9 +29,9 @@ class NeuralNetwork:
     # print(neuronsOutPrims)
     
     #stack of errors in outputs of each layer starting with output layer
-    errors = [dk - allOutputs[-1]]
+    lastZ = dk - allOutputs[-1]
     # stack of deltas in each layer neurons starting with ouput layer
-    deltas = [errors[0] * self.fprimfx(allOutputs[-1])]
+    deltas = [lastZ * self.fprimfx(allOutputs[-1])]
     for (layer,layerIndex) in reversed(list(zip(self.network[:-1],range(len(self.network[:-1]))))):
       # print("layer: ", layerIndex)
       z = []
@@ -42,13 +42,13 @@ class NeuralNetwork:
         # print(">>wagi: ", wagi)
         # print(">>primki: ", neuronsOutPrims[layerIndex+2])
         # print(">>bledy: ", errors[-1])
-        err = np.sum(wagi*neuronsOutPrims[layerIndex+2]*errors[-1])
+        err = np.sum(wagi*neuronsOutPrims[layerIndex+2]*lastZ)
         # print(">>* sum: ", err)
         z.append(err)
       deltas.append(self.fprimfx(allOutputs[layerIndex+1]) * z)
-      errors.append(np.array(z))
+      lastZ = np.array(z)
 
-    errors = list(reversed(errors))
+    # errors = list(reversed(errors))
     deltas = list(reversed(deltas))
     ########
     # print("zs: ",errors)
@@ -71,43 +71,47 @@ class NeuralNetwork:
   def __str__(self):
     return self.__repr__()
 
+alpha=1
+f = lambda x: 1/(1+np.exp(-alpha*x))
+fprimfx = lambda x: x*(1-x)
+eta = 0.1
+nn = NeuralNetwork([2,2,1],f,fprimfx,[1,1])
+# wagi początkowe (nadpisanie randomowych)
+nn.network[0][0].w = np.array([0.2, 0.1,  0.2])
+nn.network[0][1].w = np.array([0.1, 0.3, 0.1])
+nn.network[1][0].w = np.array([-0.2, -0.1,  0.2])
+
+# print(nn)
+xk = np.array([[1,0],[0,1],[0,0],[1,1]])
+dk = np.array([ [1] , [1] , [0] , [0] ])
+for i in range(80000):
+  nn.learn(xk[i % 4],dk[i % 4],eta)
+
+# #testing
+for i in range(4):
+  print(xk[i]," => ",nn.classify(xk[i]))
+
+# print("##########################################")
 # alpha=1
 # f = lambda x: 1/(1+np.exp(-alpha*x))
 # fprimfx = lambda x: x*(1-x)
-# eta = 0.1
+# eta = 0.5
 # nn = NeuralNetwork([2,2,1],f,fprimfx,[1,1])
 # # wagi początkowe (nadpisanie randomowych)
-# nn.network[0][0].w = np.array([0.2, 0.1,  0.2])
-# nn.network[0][1].w = np.array([0.1, 0.3, 0.1])
-# nn.network[1][0].w = np.array([-0.2, -0.1,  0.2])
+# nn.network[0][0].w = np.array([0.86, -0.16,  0.28])
+# nn.network[0][1].w = np.array([0.83, -0.51, -0.86])
+# nn.network[1][0].w = np.array([0.04, -0.43,  0.48])
 
-# # print(nn)
-# xk = np.array([[1,0]])
-# dk = np.array([ [1] ])
-# nn.learn(xk[0],dk[0],eta)
+# print(nn)
+# # print(nn.classify(np.array([2,2,2]), True))
+# # print(nn.classify(np.array([2,2,2])))
+# xk = np.array([[0,0],[0,1],[1,0],[1,1]])
+# dk = np.array([ [0] , [1] , [1] , [0] ])
+# for i in range(4000):
+# # for i in range(1):
+#   nn.learn(xk[i % 4],dk[i % 4],eta)
 
-
-print("##########################################")
-alpha=1
-f = lambda x: 1/(1+np.exp(-alpha*x))
-fprim = lambda x: alpha * np.exp(-alpha*x) / (np.power(1+np.exp(-alpha*x),2))
-eta = 0.5
-nn = NeuralNetwork([2,2,1],f,fprim,[1,1])
-# wagi początkowe (nadpisanie randomowych)
-nn.network[0][0].w = np.array([0.86, -0.16,  0.28])
-nn.network[0][1].w = np.array([0.83, -0.51, -0.86])
-nn.network[1][0].w = np.array([0.04, -0.43,  0.48])
-
-print(nn)
-# print(nn.classify(np.array([2,2,2]), True))
-# print(nn.classify(np.array([2,2,2])))
-xk = np.array([[0,0],[0,1],[1,0],[1,1]])
-dk = np.array([ [0] , [1] , [1] , [0] ])
-for i in range(40000):
-# for i in range(1):
-  nn.learn(xk[i % 4],dk[i % 4],eta)
-
-#testing
-for i in range(4):
-  print(xk[i]," => ",nn.classify(xk[i]))
+# #testing
+# for i in range(4):
+#   print(xk[i]," => ",nn.classify(xk[i]))
 
