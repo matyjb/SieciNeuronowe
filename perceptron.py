@@ -34,9 +34,9 @@ class Perceptron:
         # obliczanie nowej wagi
         self.w = self.w + self.r * (d - y) * x
         if(debug):
-          print("k="+str(k)+" nowa waga: "+ str(self.w))
+          print(">k="+str(k)+" wektor uczący: "+str(x)+" nowa waga: "+ str(self.w))
     
-    print("t="+str(t)+" nowa waga: "+ str(self.w))
+    print(">>t="+str(t)+" nowa waga: "+ str(self.w) + "\n")
     if (self.w == oldw).all() or maxCycles==1:
       # wagi nie zmieniły się od poprzedniego cyklu czyli koniec uczenia
       # lub został osiągnięty limit cykli

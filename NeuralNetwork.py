@@ -1,12 +1,27 @@
 import numpy as np
 from Perceptron import Perceptron
-# robione przy pomocy http://edu.pjwstk.edu.pl/wyklady/nai/scb/wyklad3/w3.htm
+from enum import Enum
+
+# robione przy pomocy:
+# http://edu.pjwstk.edu.pl/wyklady/nai/scb/wyklad3/w3.htm
 # http://www.neurosoft.edu.pl/media/pdf/jbartman/sztuczna_inteligencja/NTI%20cwiczenie_5.pdf
+# http://www-users.mat.umk.pl/~philip/propagacja2.pdf
+
+class FunctionsForNetwork(Enum):
+    SINUS = 1
+    TANGENS = 2
 
 class NeuralNetwork:
   # ns - lista z ilościami neuronów w warstwach - np [3,2,1] - 3 inputy w warstwie pierwszej, 2 neurony w warstwie drugiej, 1 neuron na wyjsciu
-  def __init__(self, ns, f, fprimfx, bias, r=0):
+  def __init__(self, ns, functionType, alpha, bias, r=0):
     self.bias = bias
+    if functionType == FunctionsForNetwork.TANGENS:
+      f = lambda x: (1-np.exp(-alpha*x))/(1+np.exp(-alpha*x))
+      fprimfx = lambda x: alpha*(1-np.power(x,2))/2
+    else:
+      f = lambda x: alpha/(1+np.exp(-alpha*x))
+      fprimfx = lambda x: x*(1-x)
+    
     self.fprimfx = fprimfx
     self.network = [[Perceptron(f,np.random.rand(ns[i]+1) / 3 ,r) for j in range(percInLayer)] for (percInLayer, i) in zip(ns[1:],range(len(ns[1:])))]
   
@@ -23,14 +38,17 @@ class NeuralNetwork:
     return allOutputs[-1] if not allNeuronsOutputs else allOutputs
 
   def learn(self,xk,dk,eta=0.1):
+    # trzyma wektory (ktore odpowiadają warstwom) które mają wyniki dla poszczególnych neuronów w danej warstwie
+    # + tez wektor inputowy xk na początku (wraz z biasem)
     allOutputs = self.classify(xk,True)
     # print(allOutputs)
+    # trzyma wyliczone pochodne dla allOutputs (trzeba pamietac ze fprimfx jest funkcją o argumencie f(x) )
     neuronsOutPrims = [self.fprimfx(allOutputs[i]) for i in range(len(allOutputs))]
     # print(neuronsOutPrims)
     
-    #stack of errors in outputs of each layer starting with output layer
+    # przechowuje ostatnie błedy dla neuronów w danej warstwie (czyli tutaj dla ostatniej warstwy (i to bedzie w przypadku XORa wektor o dlugosci 1))
     lastZ = dk - allOutputs[-1]
-    # stack of deltas in each layer neurons starting with ouput layer
+    # pomocniczy stos
     deltas = [lastZ * self.fprimfx(allOutputs[-1])]
     for (layer,layerIndex) in reversed(list(zip(self.network[:-1],range(len(self.network[:-1]))))):
       # print("layer: ", layerIndex)
@@ -48,10 +66,7 @@ class NeuralNetwork:
       deltas.append(self.fprimfx(allOutputs[layerIndex+1]) * z)
       lastZ = np.array(z)
 
-    # errors = list(reversed(errors))
     deltas = list(reversed(deltas))
-    ########
-    # print("zs: ",errors)
     # print("delty: ",deltas)
     #dostosywanie wag
     # w = w + eta*deltas[i] * allOutputs[i]
@@ -61,6 +76,7 @@ class NeuralNetwork:
       # print("delty:   ",deltas[layerIndex])
       for (neuron,neuronIndex) in zip(layer,range(len(layer))):
         if layerIndex == len(self.network) - 1:
+          # na wyjsciu mamy tylko neurony (brak dummy neurona) dlatego bez +1 przy neuronIndex
           neuron.w += eta*deltas[layerIndex][neuronIndex]*allOutputs[layerIndex]
         else:
           neuron.w += eta*deltas[layerIndex][neuronIndex+1]*allOutputs[layerIndex]
@@ -70,48 +86,3 @@ class NeuralNetwork:
     return str(self.network) + "\nwarstw = " + str(len(self.network))  + " + 1 warstwa z inputami\nwyjscia dummy neuronów = " + str(self.bias) + " (w kolejnych warstwach)"
   def __str__(self):
     return self.__repr__()
-
-alpha=1
-f = lambda x: 1/(1+np.exp(-alpha*x))
-fprimfx = lambda x: x*(1-x)
-eta = 0.1
-nn = NeuralNetwork([2,2,1],f,fprimfx,[1,1])
-# wagi początkowe (nadpisanie randomowych)
-nn.network[0][0].w = np.array([0.2, 0.1,  0.2])
-nn.network[0][1].w = np.array([0.1, 0.3, 0.1])
-nn.network[1][0].w = np.array([-0.2, -0.1,  0.2])
-
-# print(nn)
-xk = np.array([[1,0],[0,1],[0,0],[1,1]])
-dk = np.array([ [1] , [1] , [0] , [0] ])
-for i in range(80000):
-  nn.learn(xk[i % 4],dk[i % 4],eta)
-
-# #testing
-for i in range(4):
-  print(xk[i]," => ",nn.classify(xk[i]))
-
-# print("##########################################")
-# alpha=1
-# f = lambda x: 1/(1+np.exp(-alpha*x))
-# fprimfx = lambda x: x*(1-x)
-# eta = 0.5
-# nn = NeuralNetwork([2,2,1],f,fprimfx,[1,1])
-# # wagi początkowe (nadpisanie randomowych)
-# nn.network[0][0].w = np.array([0.86, -0.16,  0.28])
-# nn.network[0][1].w = np.array([0.83, -0.51, -0.86])
-# nn.network[1][0].w = np.array([0.04, -0.43,  0.48])
-
-# print(nn)
-# # print(nn.classify(np.array([2,2,2]), True))
-# # print(nn.classify(np.array([2,2,2])))
-# xk = np.array([[0,0],[0,1],[1,0],[1,1]])
-# dk = np.array([ [0] , [1] , [1] , [0] ])
-# for i in range(4000):
-# # for i in range(1):
-#   nn.learn(xk[i % 4],dk[i % 4],eta)
-
-# #testing
-# for i in range(4):
-#   print(xk[i]," => ",nn.classify(xk[i]))
-
