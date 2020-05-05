@@ -48,7 +48,7 @@ class NeuralNetwork:
     
     # przechowuje ostatnie błedy dla neuronów w danej warstwie (czyli tutaj dla ostatniej warstwy (i to bedzie w przypadku XORa wektor o dlugosci 1))
     lastZ = dk - allOutputs[-1]
-    # pomocniczy stos
+    # pomocnicza lista przechowujaca sumy błędów na wyjściach pomnozone przez wage i wartość f'(x) poszczególnych neuronów dla kolejnych warstw zaczynając od warstwy ostatniej
     deltas = [lastZ * self.fprimfx(allOutputs[-1])]
     for (layer,layerIndex) in reversed(list(zip(self.network[:-1],range(len(self.network[:-1]))))):
       # print("layer: ", layerIndex)
