@@ -1,6 +1,6 @@
 import numpy as np
 import itertools
-from HopfieldAsync import HopfieldAsync
+from HopfieldAsyncOld import HopfieldAsync
 
 # funkcja pomocnicza do wyswietlenia wynikow zadania
 def exec(x,f,w,b):

@@ -1,28 +1,17 @@
 import numpy as np
-
-class Functions:
-  STEP = 0
-  SINUS = 1
-  TANGENS = 2
+from functions import Functions
 
 class Perceptron:
   ###
-  # w - lista wag na wejsciach neurona (gdzie w0 jest bias'em)
+  # w - lista wag na wejsciach neurona
   # f - typ funkcji wyjsciowej (jedna z Functions)
   # alpha - parametr alpha do funkcji wysciowej w przypadku sinusoidalnej/tangensoidalnej
   ###
   def __init__(self, w, f=Functions.STEP, alpha=0):
     self.w = w
-    self.alpha = alpha
-    if f == Functions.STEP:
-      self.f = lambda x: 1 if x > 0 else 0
-      self.fprim = None # funkcja jest nieciągła, brak pochodnej w punkcie 0
-    elif f == Functions.SINUS:
-      self.f = lambda x: 1/(1+np.exp(-self.alpha*x))
-      self.fprim = lambda x: self.f(x)*(1-self.f(x))
-    elif f == Functions.TANGENS:
-      self.f = lambda x: (1-np.exp(-self.alpha*x))/(1+np.exp(-self.alpha*x))
-      self.fprim = lambda x: self.alpha*(1-np.power(self.f(x),2))/2
+    self.fname = f[0]
+    self.f = lambda x: f[1](x,alpha)
+    self.fprim = lambda x: f[2](x,alpha)
 
   def getZ(self, xIn):
     return np.dot(xIn,self.w)
@@ -80,6 +69,6 @@ class Perceptron:
       return self.learn(xk,dk,eta,grouped,cycle+1,debug, maxCycles-1)
 
   def __repr__(self):
-    return "Perceptron | " + str(np.size(self.w)-1) + " wejść \t| wagi = " + str(self.w) + " \t| bias = w0 = " + str(self.w[0])
+    return "Perceptron | " + str(np.size(self.w)-1) + " wejść \t| wagi = " + str(self.w)
   def __str__(self):
     return self.__repr__()
