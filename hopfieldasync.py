@@ -9,6 +9,9 @@ class HopfieldAsync:
 
   # wylicza ?klasyfikacje? zadanego wektora i numer (czas) iteracji
   def classify(self, x, t=0):
+    if t==40:
+      return x
+    print(x)
     v = np.copy(x)
     n = len(v)
     u = np.zeros(n)

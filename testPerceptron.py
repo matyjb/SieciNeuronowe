@@ -1,39 +1,21 @@
 import numpy as np
-from Perceptron import Perceptron
+from perceptron import Perceptron
 
-w0 = np.array([1,1,1])
-r = 1
-f = lambda x: 1 if x > 0 else 0
+## przyklady z zeszytu (z zajec)
+bias = 0.5
+w0 = np.array([bias,0,1])
 dk = [0,0,1,0]
-xk = np.array([[1,0,0],[1,0,1],[1,1,0],[1,1,1]])
+xk = np.array([[1,0,0],[1,1,0],[1,1,1],[1,0,1]])
 
-# testowe z ćwiczeń
-# w0 = np.array([0.5,0,1])
-# r = 1
-# f = lambda x: 1 if x > 0 else 0
-# dk = [0,0,1,0]
-# xk = np.array([[1,0,0],[1,1,0],[1,1,1],[1,0,1]])
-
-p0 = Perceptron(f,w0,r)
-p0.learn(xk,dk, debug=True)
+p0 = Perceptron(w0)
+p0.learn(xk, dk, debug=True)
 
 print("----algorytm zgrupowany----")
+bias = 1
+w0 = np.array([bias,0,1])
+dk = [0,1,0,0]
+xk = np.array([[1,0,0],[1,1,0],[1,0,1],[1,1,1]])
 
-p1 = Perceptron(f,w0,r)
-p1.learn(xk,dk,grouped=True,debug=True)
-
-##
-
-w0 = np.array([-0.12,0.4,0.65])
-r = 0.1
-f = lambda x: 1 if x > 0 else 0
-dk = [0,0,1,0]
-xk = np.array([[1,0,0],[1,0,1],[1,1,0],[1,1,1]])
-
-p0 = Perceptron(f,w0,r)
-p0.learn(xk,dk, debug=True)
-
-print("----algorytm zgrupowany----")
-
-p1 = Perceptron(f,w0,r)
-p1.learn(xk,dk,grouped=True,debug=True)
+p1 = Perceptron(w0)
+p1.learn(xk, dk, grouped=True, debug=True)
+## ####
