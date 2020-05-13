@@ -1,18 +1,16 @@
 import numpy as np
 import itertools
 from hopfield import *
+from functions import Functions
 
 # funkcja pomocnicza do wyswietlenia wynikow zadania
-def exec(x, w, b=None, mode=Modes.ASYNC):
-  h = Hopfield(w, b=b, mode=mode)
+def exec(x, w, b=None, mode=Modes.ASYNC, f=Functions.STEP):
+  h = Hopfield(w, b=b, mode=mode, f=f)
   print(h)
   for i in range(len(x)):
     xIn = x[i]
     (xOut,t) = h.classify(xIn,debug=True)
-    if t == 0:
-      print(str(xIn) + " => " + str(xOut) + " t=" + str(t) + " punkt stały!")
-    else:
-      print(str(xIn) + " => " + str(xOut) + " t=" + str(t))
+    print(str(xIn) + " => " + str(xOut) + " t=" + str(t))
 
 
 # generuje wszystkie kombinacje wektora o n długości
@@ -27,28 +25,25 @@ b = np.array([0,0])
 exec(x,w,b,Modes.SYNC)
 exec(x,w,b,Modes.ASYNC)
 
-# to psuje
-# print("---przykład z ZadRozwiazaniaHopfield.pdf str 9---")
+# print("---przykład z ZadRozwiazaniaHopfield.pdf str 9---") #inna step function !!!!
 # w = np.array([[-1,3/4],[3/4,0]])
 # x = genxs(2,0,1)
 # b = np.array([0,0])
-# f = lambda x: 1 if x >= 0 else 0
-# exec(x,f,w,b)
+# exec(x,w,b,Modes.ASYNC)
 
-# print("---przykład z ZadRozwiazaniaHopfield.pdf str 13---")
+# print("---przykład z ZadRozwiazaniaHopfield.pdf str 13---") #inna step function !!!!
 # w = np.array([[0,1,-1],[1,0,1],[-1,1,0]])
 # x = genxs(3,0,1)
 # b = np.array([0,0,0])
-# f = lambda x: 1 if x > 0 else 0
-# exec(x,f,w,b)
+# exec(x,w,b,Modes.SYNC)
 
-# print("---projekt---")
-# c = 2/3
-# w = np.array([[0,-c,c],[-c,0,-c],[c,-c,0]])
-# x = genxs(3,-1,1)
-# b = np.array([0,0,0])
-# f = lambda x: 1 if x > 0 else -1
-# exec(x,f,w,b)
+print("---projekt---")
+c = 2/3
+w = np.array([[0,-c,c],[-c,0,-c],[c,-c,0]])
+x = genxs(3,-1,1)
+b = np.array([0,0,0])
+exec(x,w,b,Modes.SYNC,Functions.STEP1)
+exec(x,w,b,Modes.ASYNC,Functions.STEP1)
 
 # print("---ZADANIE 3---")
 # w = np.array([[0,1],[-1,0]])
