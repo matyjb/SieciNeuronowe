@@ -5,6 +5,7 @@ from hopfield import *
 # funkcja pomocnicza do wyswietlenia wynikow zadania
 def exec(x, w, b=None, mode=Modes.ASYNC):
   h = Hopfield(w, b=b, mode=mode)
+  print(h)
   for i in range(len(x)):
     xIn = x[i]
     (xOut,t) = h.classify(xIn,debug=True)
@@ -23,7 +24,7 @@ print("---przykład z notatek---")
 w = np.array([[0,1],[1,0]])
 x = genxs(2,0,1)
 b = np.array([0,0])
-# exec(x,w,b,Modes.SYNC)
+exec(x,w,b,Modes.SYNC)
 exec(x,w,b,Modes.ASYNC)
 
 # to psuje

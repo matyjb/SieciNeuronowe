@@ -2,8 +2,8 @@ import numpy as np
 from functions import Functions
 
 class Modes:
-  SYNC = 0
-  ASYNC = 1
+  SYNC = "synchroniczny"
+  ASYNC = "asynchroniczny"
 
 class Hopfield:
 
@@ -27,7 +27,7 @@ class Hopfield:
     self.mode = mode
 
   # wylicza ?klasyfikacje? zadanego wektora
-  def classify(self, x, t=0, debug=False):
+  def classify(self, x, t=0, debug=False, xtminus2=None):
     if t==40:
       return (x,t)
     
@@ -47,16 +47,21 @@ class Hopfield:
         if debug:
           print("%4s | %20s | %20s | %20s" % (t,vOld,u,v))
     elif self.mode == Modes.SYNC:
+      # jesli w jest symetryczna to nowe v moze skakac miedzy dwoma stanami lub zbiegac do jednego
       vOld = np.copy(v)
       u = (v*self.w).A1 + self.b
       v = np.array([self.f(ui) for ui in u])
       if debug:
         print("%4s | %20s | %20s | %20s" % (t,vOld,u,v))
     
-    if not (v == x).all():
-      return self.classify(v, t+1, debug)
-    else:
+    if xtminus2 is not None and (xtminus2 == v).all():
+      # metastabilny
+      return ((x,xtminus2),t)
+    elif (v == x).all():
+      # nic sie nie zmieniło po iteracji wiec koniec klasyfikacji
       return (v,t)
+    else:
+      return self.classify(v, t+1, debug, x)
   
 
 
@@ -73,3 +78,9 @@ class Hopfield:
           neww[i,j] = sum([xk[k,i] * xk[k,j] for k in range(K)])
     self.w = np.matrix(neww / N)
     self.b = np.zeros(N)
+
+
+  def __repr__(self):
+    return "Hopfield | " + str(np.size(self.w, axis=0)) + " wejść \t| tryb: "+str(self.mode)+" \t| funkcja aktywacji: "+self.fname+"\n wagi = \n" + str(self.w)
+  def __str__(self):
+    return self.__repr__()

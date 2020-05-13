@@ -24,7 +24,7 @@ class Perceptron:
   # grouped - czy użyć algorytmu zgrupowanego
   # debug - czy printowac nowe wagi w kazdych krokach
   # zwraca ilość cykli, która zajęła by ustabilizować wagi i koncowe wagi
-  def learn(self, xk, dk, eta = 1, grouped=False, cycle=0, debug=False, maxCycles=np.Inf):
+  def learn(self, xk, dk, eta = 1, grouped=False, cycle=0, debug=False, maxCycles=1000):
     if debug and cycle == 0:
       if grouped:
         print("%4s | %20s" % ("cykl","nowa waga"))
