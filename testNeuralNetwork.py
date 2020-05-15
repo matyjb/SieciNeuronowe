@@ -17,6 +17,7 @@ x0s = np.array([1,1])
 nn = NeuralNetwork(w, layersx0s=x0s, f=Functions.SINUS, alpha=alpha)
 
 print(nn)
+print(nn.classify(np.array([1,0])))
 
 # xk = np.array([[1,0],[0,1],[0,0],[1,1]])
 # dk = np.array([ [1] , [1] , [0] , [0] ])

@@ -16,12 +16,17 @@ class NeuralNetwork:
     self.network = list(map(lambda layer: [Perceptron(ww, f, alpha) for ww in layer],w))
   
   # x - wektor w postaci [x1,x2,x3...] | bez x0 !!! x0=1 doklejane juz w funkcji
-  def classify(self, x, debug=False):
+  def classify(self, x, debug=True):
+    allOutputs = [] #only for debug
     currentLayerOutput = np.copy(x) # zmienna pomocnicza
     for (layer,biasInput) in zip(self.network,self.layersx0s):
       currentLayerOutput = np.insert(currentLayerOutput,0,biasInput) # dodaj x0
+      allOutputs.append(currentLayerOutput)
       currentLayerOutput = np.array([neuron.calcOutput(currentLayerOutput) for neuron in layer])
 
+    allOutputs.append(currentLayerOutput)
+    if debug:
+      print(allOutputs)
     return currentLayerOutput
 
   # TODO - rewrite
