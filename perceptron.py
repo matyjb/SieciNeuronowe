@@ -7,7 +7,7 @@ class Perceptron:
   # f - typ funkcji wyjsciowej (jedna z Functions)
   # alpha - parametr alpha do funkcji wysciowej w przypadku sinusoidalnej/tangensoidalnej
   ###
-  def __init__(self, w, f=Functions.STEP, alpha=0):
+  def __init__(self, w, f=Functions.STEP, alpha=1):
     self.w = w
     self.fname = f[0]
     self.f = lambda x: f[1](x,alpha)

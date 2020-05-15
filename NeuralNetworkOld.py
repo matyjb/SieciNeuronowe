@@ -1,27 +1,42 @@
 import numpy as np
-from perceptron import Perceptron
-from functions import Functions
+from Perceptron import Perceptron
+from enum import Enum
 
 # robione przy pomocy:
 # http://edu.pjwstk.edu.pl/wyklady/nai/scb/wyklad3/w3.htm
 # http://www.neurosoft.edu.pl/media/pdf/jbartman/sztuczna_inteligencja/NTI%20cwiczenie_5.pdf
 # http://www-users.mat.umk.pl/~philip/propagacja2.pdf
 
+class FunctionsForNetwork(Enum):
+    SINUS = 1
+    TANGENS = 2
+
 class NeuralNetwork:
-  # w - lista z wektorami wag dla poszczególnych perceptronów w poszczególnych warstwach zaczynająć od inputa
-  def __init__(self, w, f=Functions.SINUS, alpha=1):
-    self.network = list(map(lambda ww: [Perceptron(www, f, alpha) for www in ww],w))
+  # ns - lista z ilościami neuronów w warstwach - np [3,2,1] - 3 inputy w warstwie pierwszej, 2 neurony w warstwie drugiej, 1 neuron na wyjsciu
+  def __init__(self, ns, functionType, alpha, bias, r=0):
+    self.bias = bias
+    if functionType == FunctionsForNetwork.TANGENS:
+      f = lambda x: (1-np.exp(-alpha*x))/(1+np.exp(-alpha*x))
+      fprimfx = lambda x: alpha*(1-np.power(x,2))/2
+    else:
+      f = lambda x: alpha/(1+np.exp(-alpha*x))
+      fprimfx = lambda x: x*(1-x)
+    
+    self.fprimfx = fprimfx
+    self.network = [[Perceptron(f,np.random.rand(ns[i]+1) / 3 ,r) for j in range(percInLayer)] for (percInLayer, i) in zip(ns[1:],range(len(ns[1:])))]
   
-  # x - wektor postaci [x1,x2,x3...] | bez x0 !!! x0=1 doklejane juz w funkcji
-  def classify(self, x, debug=False):
-    currentLayerOutput = np.copy(x) # zmienna pomocnicza
-    for layer in self.network:
-      currentLayerOutput = np.insert(currentLayerOutput,0,1) # dodaj x0 = 1
-      currentLayerOutput = np.array([neuron.calcOutput(currentLayerOutput) for neuron in layer])
+  def classify(self, x, allNeuronsOutputs=False):
+    # xx = np.copy(x)
+    allOutputs = [np.insert(x,0,self.bias[0])]
+    for (layer,layerBiasIndex) in zip(self.network, range(len(self.bias))):
+      # xx = np.insert(xx,0,layerBias)
+      xx = np.array([p.classify(allOutputs[-1]) for p in layer])
+      if layerBiasIndex != len(self.bias) - 1:
+        allOutputs.append(np.insert(xx,0,self.bias[layerBiasIndex + 1]))
+      else:
+        allOutputs.append(xx)
+    return allOutputs[-1] if not allNeuronsOutputs else allOutputs
 
-    return currentLayerOutput
-
-  # TODO - rewrite
   def learn(self,xk,dk,eta=0.1):
     # trzyma wektory (ktore odpowiadają warstwom) które mają wyniki dla poszczególnych neuronów w danej warstwie
     # + tez wektor inputowy xk na początku (wraz z biasem)
@@ -68,6 +83,6 @@ class NeuralNetwork:
         # print("nowe w: ",neuron.w)
 
   def __repr__(self):
-    return str(self.network) + "\nwarstw = " + str(len(self.network))  + " + 1 warstwa z inputami"
+    return str(self.network) + "\nwarstw = " + str(len(self.network))  + " + 1 warstwa z inputami\nwyjscia dummy neuronów = " + str(self.bias) + " (w kolejnych warstwach)"
   def __str__(self):
     return self.__repr__()
