@@ -9,14 +9,17 @@ from functions import Functions
 
 class NeuralNetwork:
   # w - lista z wektorami wag dla poszczególnych perceptronów w poszczególnych warstwach zaczynająć od inputa
-  def __init__(self, w, f=Functions.SINUS, alpha=1):
-    self.network = list(map(lambda ww: [Perceptron(www, f, alpha) for www in ww],w))
+  def __init__(self, w, layersx0s=None, f=Functions.SINUS, alpha=1):
+    if layersx0s is None:
+      layersx0s = np.ones(np.size(w,axis=0))
+    self.layersx0s = layersx0s
+    self.network = list(map(lambda layer: [Perceptron(ww, f, alpha) for ww in layer],w))
   
-  # x - wektor postaci [x1,x2,x3...] | bez x0 !!! x0=1 doklejane juz w funkcji
+  # x - wektor w postaci [x1,x2,x3...] | bez x0 !!! x0=1 doklejane juz w funkcji
   def classify(self, x, debug=False):
     currentLayerOutput = np.copy(x) # zmienna pomocnicza
-    for layer in self.network:
-      currentLayerOutput = np.insert(currentLayerOutput,0,1) # dodaj x0 = 1
+    for (layer,biasInput) in zip(self.network,self.layersx0s):
+      currentLayerOutput = np.insert(currentLayerOutput,0,biasInput) # dodaj x0
       currentLayerOutput = np.array([neuron.calcOutput(currentLayerOutput) for neuron in layer])
 
     return currentLayerOutput

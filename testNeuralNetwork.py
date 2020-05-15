@@ -6,8 +6,15 @@ learningStepsAmount = 60000
 
 alpha=1
 eta = 0.1
-w = np.array([[[0.2, 0.1,  0.2],[0.1, 0.3, 0.1]],[[-0.2, -0.1,  0.2]]])
-nn = NeuralNetwork(w, f=Functions.SINUS, alpha=alpha)
+#warstwa 0
+w00 = [0.2, 0.1,  0.2]
+w01 = [0.1, 0.3, 0.1]
+# warstwa 1 (output)
+w10 = [-0.2, -0.1,  0.2]
+
+w = np.array([[w00,w01],[w10]])
+x0s = np.array([1,1])
+nn = NeuralNetwork(w, layersx0s=x0s, f=Functions.SINUS, alpha=alpha)
 
 print(nn)
 
