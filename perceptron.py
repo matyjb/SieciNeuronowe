@@ -19,6 +19,9 @@ class Perceptron:
   def calcOutput(self,xIn):
     return self.f(self.getZ(xIn))
 
+  def calcOutputPrim(self,xIn):
+    return self.fprim(self.getZ(xIn))
+
   # uczy perceptron przy pomocy listy wektorów uczacych xk i wektora watości oczekiwanych dk
   # eta - stała uczenia
   # grouped - czy użyć algorytmu zgrupowanego

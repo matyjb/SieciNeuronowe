@@ -15,8 +15,8 @@ class NeuralNetwork:
     self.layersx0s = layersx0s
     self.network = list(map(lambda layer: [Perceptron(ww, f, alpha) for ww in layer],w))
   
-  # x - wektor w postaci [x1,x2,x3...] | bez x0 !!! x0=1 doklejane juz w funkcji
-  def classify(self, x, debug=True):
+  # x - wektor w postaci [x1,x2,x3...] | bez x0 !!! x0 doklejane juz w funkcji
+  def classify(self, x, debug=False, withAllOutputs=False):
     allOutputs = [] #only for debug
     currentLayerOutput = np.copy(x) # zmienna pomocnicza
     for (layer,biasInput) in zip(self.network,self.layersx0s):
@@ -27,53 +27,51 @@ class NeuralNetwork:
     allOutputs.append(currentLayerOutput)
     if debug:
       print(allOutputs)
-    return currentLayerOutput
+    return (currentLayerOutput, allOutputs) if withAllOutputs else currentLayerOutput
 
-  # TODO - rewrite
-  def learn(self,xk,dk,eta=0.1):
-    # trzyma wektory (ktore odpowiadają warstwom) które mają wyniki dla poszczególnych neuronów w danej warstwie
-    # + tez wektor inputowy xk na początku (wraz z biasem)
-    allOutputs = self.classify(xk,True)
-    # print(allOutputs)
-    # trzyma wyliczone pochodne dla allOutputs (trzeba pamietac ze fprimfx jest funkcją o argumencie f(x) )
-    neuronsOutPrims = [self.fprimfx(allOutputs[i]) for i in range(len(allOutputs))]
-    # print(neuronsOutPrims)
-    
-    # przechowuje ostatnie błedy dla neuronów w danej warstwie (czyli tutaj dla ostatniej warstwy (i to bedzie w przypadku XORa wektor o dlugosci 1))
-    lastZ = dk - allOutputs[-1]
-    # pomocnicza lista przechowujaca sumy błędów na wyjściach pomnozone przez wage i wartość f'(x) poszczególnych neuronów dla kolejnych warstw zaczynając od warstwy ostatniej
-    deltas = [lastZ * self.fprimfx(allOutputs[-1])]
-    for (layer,layerIndex) in reversed(list(zip(self.network[:-1],range(len(self.network[:-1]))))):
-      # print("layer: ", layerIndex)
-      z = []
-      for neuronIndex in range(len(layer)+1): #+1 bo jest jeszcze dummy neuron
-        # print(">neuron: ", neuronIndex)
-        # zebrac wagi z warstwy nastepnej dla tego neurona
-        wagi = np.array([nextNeuron.w[neuronIndex] for nextNeuron in self.network[layerIndex+1]])
-        # print(">>wagi: ", wagi)
-        # print(">>primki: ", neuronsOutPrims[layerIndex+2])
-        # print(">>bledy: ", errors[-1])
-        err = np.sum(wagi*neuronsOutPrims[layerIndex+2]*lastZ)
-        # print(">>* sum: ", err)
-        z.append(err)
-      deltas.append(self.fprimfx(allOutputs[layerIndex+1]) * z)
-      lastZ = np.array(z)
+  # x - wektor w postaci [x1,x2,x3...] | bez x0 !!! x0 doklejane juz w funkcji
+  def classifyPrim(self, x):
+    prims = []
+    currentLayerOutput = np.copy(x) # zmienna pomocnicza
+    for (layer,biasInput) in zip(self.network,self.layersx0s):
+      currentLayerOutput = np.insert(currentLayerOutput,0,biasInput) # dodaj x0
+      prims.append(np.array([neuron.calcOutputPrim(currentLayerOutput) for neuron in layer]))
+      currentLayerOutput = np.array([neuron.calcOutput(currentLayerOutput) for neuron in layer])
 
-    deltas = list(reversed(deltas))
-    # print("delty: ",deltas)
-    #dostosywanie wag
-    # w = w + eta*deltas[i] * allOutputs[i]
-    for (layer,layerIndex) in zip(self.network,range(len(self.network))):
-      # print(">layer: ",layerIndex)
-      # print("outputy: ",allOutputs[layerIndex])
-      # print("delty:   ",deltas[layerIndex])
-      for (neuron,neuronIndex) in zip(layer,range(len(layer))):
-        if layerIndex == len(self.network) - 1:
-          # na wyjsciu mamy tylko neurony (brak dummy neurona) dlatego bez +1 przy neuronIndex
-          neuron.w += eta*deltas[layerIndex][neuronIndex]*allOutputs[layerIndex]
-        else:
-          neuron.w += eta*deltas[layerIndex][neuronIndex+1]*allOutputs[layerIndex]
-        # print("nowe w: ",neuron.w)
+    return prims
+
+  def learnStep(self, xIn, dOut, eta=0.1):
+    (_,outputs) = self.classify(xIn, withAllOutputs=True)
+    outputsPrims = self.classifyPrim(xIn)
+    errors = [None] * len(self.network) # wektory błędów w poszczególnych warstwach zaczynając od końcowej
+    errors[-1] = dOut - self.classify(xIn)
+    deltas = [None] * len(self.network)
+    deltas[-1] = errors[-1] * outputsPrims[-1]
+
+    # propagacja błędów
+    for layerIndex in reversed(range(len(self.network)-1)):
+      err = [None] * len(self.network[layerIndex])
+      delt = [None] * len(self.network[layerIndex])
+      for neuronIndex in range(len(self.network[layerIndex])):
+        wagi = np.array([neuron.w[neuronIndex+1] for neuron in self.network[layerIndex+1]])
+        err[neuronIndex] = np.sum(deltas[layerIndex+1]*wagi)
+      
+      deltas[layerIndex] = err * outputsPrims[layerIndex]
+      errors[layerIndex] = np.array(err)
+       
+    # poprawianie wag w[warstwa,neuron] += eta*deltas[warstwa,neuron]*outputs[warstwa]
+    for layerIndex in range(len(self.network)):
+      for neuronIndex in range(len(self.network[layerIndex])):
+        wDelta = eta * outputs[layerIndex] * deltas[layerIndex][neuronIndex]
+        self.network[layerIndex][neuronIndex].w += wDelta
+
+  # xk - array wektorów uczących
+  # dk - array wartości oczekiwanych
+  # eta - stała uczenia
+  def learn(self, xk, dk, eta=0.1, iterations=15000):
+    for i in range(iterations):
+      for (x,d) in zip(xk,dk):
+        self.learnStep(x, d, eta)
 
   def __repr__(self):
     return str(self.network) + "\nwarstw = " + str(len(self.network))  + " + 1 warstwa z inputami"
