@@ -41,11 +41,13 @@ class NeuralNetwork:
     return prims
 
   def learnStep(self, xIn, dOut, eta=0.1):
-    (_,outputs) = self.classify(xIn, withAllOutputs=True)
+    (y,outputs) = self.classify(xIn, withAllOutputs=True)
     outputsPrims = self.classifyPrim(xIn)
-    errors = [None] * len(self.network) # wektory błędów w poszczególnych warstwach zaczynając od końcowej
-    errors[-1] = dOut - self.classify(xIn)
-    deltas = [None] * len(self.network)
+    errors = [None] * len(self.network) # lista błędów w poszczególnych warstwach zaczynając od końcowej
+    deltas = [None] * len(self.network) # lista ze zmiennymi pomocniczymi: błąd * fprim, dla kazdego z neurona w poszczególnych warstwach
+    
+    # obliczenia dla wartwy output
+    errors[-1] = dOut - y
     deltas[-1] = errors[-1] * outputsPrims[-1]
 
     # propagacja błędów

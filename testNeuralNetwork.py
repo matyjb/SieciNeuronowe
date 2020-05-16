@@ -44,12 +44,16 @@ w = np.array([[w00,w01],[w10]])
 x0s = np.array([1,1])
 nn = NeuralNetwork(w, layersx0s=x0s, f=Functions.SINUS, alpha=alpha)
 
+print("--przed uczeniem--")
 print(nn)
 
 xk = np.array([[1,0],[0,1],[0,0],[1,1]])
 dk = np.array([ [1] , [1] , [0] , [0] ])
 nn.learn(xk,dk,eta,iterations)
 
+print("--po uczeniu--")
+print(nn)
 # #testing
 for i in range(4):
   print(xk[i]," => ",nn.classify(xk[i]))
+
