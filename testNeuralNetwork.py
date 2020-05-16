@@ -2,8 +2,11 @@ import numpy as np
 from neuralNetwork import NeuralNetwork
 from functions import Functions
 
+print("###########################################")
+print("###############--TEST  XOR--###############")
+print("###########################################")
 
-# print("#############-Z INTERNETU-################")
+# print("\n# Z INTERNETU #\n")
 # iterations = 15000
 # alpha=1
 # eta = 0.1
@@ -27,7 +30,7 @@ from functions import Functions
 # for i in range(4):
 #   print(xk[i]," => ",nn.classify(xk[i]))
 
-print("#############-PROJEKT-################")
+print("\n# PROJEKT #\n")
 iterations = 5000
 alpha=1
 eta = 0.5

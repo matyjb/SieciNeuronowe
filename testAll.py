@@ -1,0 +1,3 @@
+import testPerceptron
+import testHopfield
+import testNeuralNetwork

@@ -3,6 +3,7 @@ import itertools
 from hopfield import *
 from functions import Functions
 
+
 # funkcja pomocnicza do wyswietlenia wynikow zadania
 def exec(x, w, b=None, mode=Modes.ASYNC, f=Functions.STEP):
   h = Hopfield(w, b=b, mode=mode, f=f)
@@ -18,12 +19,18 @@ def exec(x, w, b=None, mode=Modes.ASYNC, f=Functions.STEP):
 def genxs(n, v1, v2):
   return np.array([list(i) for i in itertools.product([v1, v2], repeat=n)])
 
-print("---przykład z notatek---")
-w = np.array([[0,1],[1,0]])
-x = genxs(2,0,1)
-b = np.array([0,0])
-exec(x,w,b,Modes.SYNC)
-exec(x,w,b,Modes.ASYNC)
+print("###########################################")
+print("#############--TEST HOPFIELD--#############")
+print("###########################################")
+
+# print("\n# Z NOTATEK #\n")
+# w = np.array([[0,1],[1,0]])
+# x = genxs(2,0,1)
+# b = np.array([0,0])
+# print("sync)\n")
+# exec(x,w,b,Modes.SYNC)
+# print("\nasync)")
+# exec(x,w,b,Modes.ASYNC)
 
 # print("---przykład z ZadRozwiazaniaHopfield.pdf str 9---") #inna step function !!!!
 # w = np.array([[-1,3/4],[3/4,0]])
@@ -37,12 +44,14 @@ exec(x,w,b,Modes.ASYNC)
 # b = np.array([0,0,0])
 # exec(x,w,b,Modes.SYNC)
 
-print("---projekt---")
+print("\n# PROJEKT #\n")
 c = 2/3
 w = np.array([[0,-c,c],[-c,0,-c],[c,-c,0]])
 x = genxs(3,-1,1)
 b = np.array([0,0,0])
+print("sync)\n")
 exec(x,w,b,Modes.SYNC,Functions.STEP1)
+print("\nasync)\n")
 exec(x,w,b,Modes.ASYNC,Functions.STEP1)
 
 # print("---ZADANIE 3---")
