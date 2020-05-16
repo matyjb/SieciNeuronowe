@@ -32,7 +32,7 @@ class Hopfield:
       return (x,t)
     
     if debug and t==0:
-      print("%4s | %20s | %20s | %20s" % ("czas","v","u","nowe v"))
+      print("%4s | %20s | %40s | %20s" % ("czas","v","u","nowe v"))
 
 
     v = np.copy(x)
@@ -45,14 +45,14 @@ class Hopfield:
         u = (v*self.w).A1 + self.b
         v[i] = self.f(u[i])
         if debug:
-          print("%4s | %20s | %20s | %20s" % (t,vOld,u,v))
+          print("%4s | %20s | %40s | %20s" % (t,vOld,u,v))
     elif self.mode == Modes.SYNC:
       # jesli w jest symetryczna to nowe v moze skakac miedzy dwoma stanami lub zbiegac do jednego
       vOld = np.copy(v)
       u = (v*self.w).A1 + self.b
       v = np.array([self.f(ui) for ui in u])
       if debug:
-        print("%4s | %20s | %20s | %20s" % (t,vOld,u,v))
+        print("%4s | %20s | %40s | %20s" % (t,vOld,u,v))
     
     if xtminus2 is not None and (xtminus2 == v).all():
       # metastabilny
