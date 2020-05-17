@@ -50,7 +50,6 @@ class NeuralNetwork:
     # propagacja błędów
     for layerIndex in reversed(range(len(self.network)-1)):
       err = [None] * len(self.network[layerIndex])
-      delt = [None] * len(self.network[layerIndex])
       for neuronIndex in range(len(self.network[layerIndex])):
         wagi = np.array([neuron.w[neuronIndex+1] for neuron in self.network[layerIndex+1]])
         err[neuronIndex] = np.sum(deltas[layerIndex+1]*wagi)
