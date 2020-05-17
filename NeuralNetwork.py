@@ -17,7 +17,7 @@ class NeuralNetwork:
   
   # x - wektor w postaci [x1,x2,x3...] | bez x0 !!! x0 doklejane juz w funkcji
   def classify(self, x, debug=False, withAllOutputs=False):
-    allOutputs = [] #only for debug
+    allOutputs = []
     currentLayerOutput = np.copy(x) # zmienna pomocnicza
     for (layer,biasInput) in zip(self.network,self.layersx0s):
       currentLayerOutput = np.insert(currentLayerOutput,0,biasInput) # dodaj x0
