@@ -27,35 +27,32 @@ class NeuralNetwork:
     return allOutputs[1:] if withAllOutputs else allOutputs[-1]
 
   # x - wektor w postaci [x1,x2,x3...] | bez x0 !!! x0 doklejane juz w funkcji
-  def classifyPrim(self, x, debug=False):
-    allOutputs = [x]
+  def classifyPrim(self, x):
+    prims = []
+    currentLayerInput = np.copy(x) # zmienna pomocnicza
     for (layer,biasInput) in zip(self.network,self.layersx0s):
-      allOutputs[-1] = np.insert(allOutputs[-1],0,biasInput) # dodaj x0
-      allOutputs.append(np.array([neuron.calcOutputPrim(allOutputs[-1]) for neuron in layer]))
+      currentLayerInput = np.insert(currentLayerInput,0,biasInput) # dodaj x0
+      prims.append(np.array([neuron.calcOutputPrim(currentLayerInput) for neuron in layer]))
+      currentLayerInput = np.array([neuron.calcOutput(currentLayerInput) for neuron in layer]) #output tej warstwy staje sie inputem następnej
 
-    if debug:
-      print(allOutputs)
-    return allOutputs[1:]
+    return prims
 
   def learnStep(self, xIn, dOut, eta=0.1):
     outputs = self.classify(xIn, withAllOutputs=True)
     outputsPrims = self.classifyPrim(xIn)
-    errors = [None] * len(self.network) # lista błędów w poszczególnych warstwach zaczynając od końcowej
     deltas = [None] * len(self.network) # lista ze zmiennymi pomocniczymi: błąd * fprim, dla kazdego z neurona w poszczególnych warstwach
     
     # obliczenia dla wartwy output
-    errors[-1] = dOut - outputs[-1]
-    deltas[-1] = errors[-1] * outputsPrims[-1]
+    deltas[-1] = (dOut - outputs[-1]) * outputsPrims[-1]
 
     # propagacja błędów
     for layerIndex in reversed(range(len(self.network)-1)):
-      err = [None] * len(self.network[layerIndex])
+      errors = [None] * len(self.network[layerIndex]) # błedy dla kazdego neurona w layerIndex warstwie
       for neuronIndex in range(len(self.network[layerIndex])):
         wagi = np.array([neuron.w[neuronIndex+1] for neuron in self.network[layerIndex+1]])
-        err[neuronIndex] = np.sum(deltas[layerIndex+1]*wagi)
+        errors[neuronIndex] = np.sum(deltas[layerIndex+1]*wagi)
 
-      deltas[layerIndex] = err * outputsPrims[layerIndex][1:]
-      errors[layerIndex] = np.array(err)
+      deltas[layerIndex] = np.array(errors) * outputsPrims[layerIndex]
     
     xIn = np.insert(xIn,0,self.layersx0s[0])
     layersInputs = np.insert(outputs,0,None)[:-1]
