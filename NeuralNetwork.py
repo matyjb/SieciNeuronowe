@@ -17,37 +17,34 @@ class NeuralNetwork:
   
   # x - wektor w postaci [x1,x2,x3...] | bez x0 !!! x0 doklejane juz w funkcji
   def classify(self, x, debug=False, withAllOutputs=False):
-    allOutputs = []
-    currentLayerOutput = np.copy(x) # zmienna pomocnicza
+    allOutputs = [x]
     for (layer,biasInput) in zip(self.network,self.layersx0s):
-      currentLayerOutput = np.insert(currentLayerOutput,0,biasInput) # dodaj x0
-      allOutputs.append(currentLayerOutput)
-      currentLayerOutput = np.array([neuron.calcOutput(currentLayerOutput) for neuron in layer])
+      allOutputs[-1] = np.insert(allOutputs[-1],0,biasInput) # dodaj x0
+      allOutputs.append(np.array([neuron.calcOutput(allOutputs[-1]) for neuron in layer]))
 
-    allOutputs.append(currentLayerOutput)
     if debug:
       print(allOutputs)
-    return (currentLayerOutput, allOutputs) if withAllOutputs else currentLayerOutput
+    return allOutputs[1:] if withAllOutputs else allOutputs[-1]
 
   # x - wektor w postaci [x1,x2,x3...] | bez x0 !!! x0 doklejane juz w funkcji
-  def classifyPrim(self, x):
-    prims = []
-    currentLayerOutput = np.copy(x) # zmienna pomocnicza
+  def classifyPrim(self, x, debug=False):
+    allOutputs = [x]
     for (layer,biasInput) in zip(self.network,self.layersx0s):
-      currentLayerOutput = np.insert(currentLayerOutput,0,biasInput) # dodaj x0
-      prims.append(np.array([neuron.calcOutputPrim(currentLayerOutput) for neuron in layer]))
-      currentLayerOutput = np.array([neuron.calcOutput(currentLayerOutput) for neuron in layer])
+      allOutputs[-1] = np.insert(allOutputs[-1],0,biasInput) # dodaj x0
+      allOutputs.append(np.array([neuron.calcOutputPrim(allOutputs[-1]) for neuron in layer]))
 
-    return prims
+    if debug:
+      print(allOutputs)
+    return allOutputs[1:]
 
   def learnStep(self, xIn, dOut, eta=0.1):
-    (y,outputs) = self.classify(xIn, withAllOutputs=True)
+    outputs = self.classify(xIn, withAllOutputs=True)
     outputsPrims = self.classifyPrim(xIn)
     errors = [None] * len(self.network) # lista błędów w poszczególnych warstwach zaczynając od końcowej
     deltas = [None] * len(self.network) # lista ze zmiennymi pomocniczymi: błąd * fprim, dla kazdego z neurona w poszczególnych warstwach
     
     # obliczenia dla wartwy output
-    errors[-1] = dOut - y
+    errors[-1] = dOut - outputs[-1]
     deltas[-1] = errors[-1] * outputsPrims[-1]
 
     # propagacja błędów
@@ -57,14 +54,17 @@ class NeuralNetwork:
       for neuronIndex in range(len(self.network[layerIndex])):
         wagi = np.array([neuron.w[neuronIndex+1] for neuron in self.network[layerIndex+1]])
         err[neuronIndex] = np.sum(deltas[layerIndex+1]*wagi)
-      
-      deltas[layerIndex] = err * outputsPrims[layerIndex]
+
+      deltas[layerIndex] = err * outputsPrims[layerIndex][1:]
       errors[layerIndex] = np.array(err)
-       
-    # poprawianie wag w[warstwa,neuron] += eta*deltas[warstwa,neuron]*outputs[warstwa]
+    
+    xIn = np.insert(xIn,0,self.layersx0s[0])
+    layersInputs = np.insert(outputs,0,None)[:-1]
+    layersInputs[0] = xIn
+    # poprawianie wag w[warstwa,neuron] += eta*deltas[warstwa,neuron]*layersInputs[warstwa]
     for layerIndex in range(len(self.network)):
       for neuronIndex in range(len(self.network[layerIndex])):
-        wDelta = eta * outputs[layerIndex] * deltas[layerIndex][neuronIndex]
+        wDelta = eta * layersInputs[layerIndex] * deltas[layerIndex][neuronIndex]
         self.network[layerIndex][neuronIndex].w += wDelta
 
   # xk - array wektorów uczących
