@@ -72,6 +72,10 @@ class NeuralNetwork:
         self.learnStep(x, d, eta)
 
   def __repr__(self):
-    return str(self.network) + "\nwarstw = " + str(len(self.network))  + " + 1 warstwa z inputami"
+    s = ""
+    for (layer,i) in zip(self.network,range(len(self.network))):
+      s += ">warstwa " + str(i) + "\n" + str(np.array(layer)) + "\n"
+
+    return s + "stale wejscia w warstwach: " +str(self.layersx0s)
   def __str__(self):
     return self.__repr__()

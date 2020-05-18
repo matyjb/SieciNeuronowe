@@ -72,6 +72,6 @@ class Perceptron:
       return self.learn(xk,dk,eta,grouped,cycle+1,debug, maxCycles-1)
 
   def __repr__(self):
-    return "Perceptron | " + str(np.size(self.w)-1) + " wejść \t| wagi = " + str(self.w)
+    return "Perceptron | wagi = " + str(self.w) + " | funkcja: " + self.fname
   def __str__(self):
     return self.__repr__()
