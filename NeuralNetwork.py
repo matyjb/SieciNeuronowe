@@ -78,7 +78,7 @@ class NeuralNetwork:
         wagi = np.array([neuron.w[neuronIndex+1] for neuron in self.network[layerIndex+1]])
         errors[neuronIndex] = np.sum(deltas[layerIndex+1]*wagi)
 
-      deltas[layerIndex] = np.array(errors)*beta*beta*(1-np.power(outputs[layerIndex][1:],2))
+      deltas[layerIndex] = np.array(errors)*beta*beta
     
     xIn = np.insert(xIn,0,self.layersx0s[0])
     layersInputs = np.insert(outputs,0,None)[:-1]
@@ -86,7 +86,10 @@ class NeuralNetwork:
     # poprawianie wag w[warstwa,neuron] += eta*deltas[warstwa,neuron]*layersInputs[warstwa]
     for layerIndex in range(len(self.network)):
       for neuronIndex in range(len(self.network[layerIndex])):
-        wDelta = eta * layersInputs[layerIndex] * deltas[layerIndex][neuronIndex]
+        if layerIndex == len(self.network)-1:
+          wDelta = eta * layersInputs[layerIndex] * deltas[layerIndex][neuronIndex]
+        else:
+          wDelta = eta * (1-np.power(layersInputs[layerIndex],2)) * deltas[layerIndex][neuronIndex]
         self.network[layerIndex][neuronIndex].w += wDelta
 
   # xk - array wektorów uczących
