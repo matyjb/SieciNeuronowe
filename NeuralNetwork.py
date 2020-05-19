@@ -77,16 +77,16 @@ class NeuralNetwork:
   # xk - array wektorów uczących
   # dk - array wartości oczekiwanych
   # eta - stała uczenia
-  # mode - energia całkowita/cząstkowa [True/False]
+  # mode - energia całkowita/cząstkowa [False/True]
   def learn(self, xk, dk, eta=0.1, iterations=15000, mode=True):
     for i in range(iterations):
       if mode:
-        # całkowita
+        # cząstkowa
         for (x,d) in zip(xk,dk):
           wDeltas = self._backPropGetWDeltas(x,d,eta)
           self._addWDelta(wDeltas)
       else:
-        # cząstkowa
+        # całkowita
         wDeltasSum = self._backPropGetWDeltas(xk[0],dk[0],eta)
         for (x,d) in zip(xk[1:],dk[1:]):
           wDeltasSum += self._backPropGetWDeltas(x,d,eta)
