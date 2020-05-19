@@ -62,6 +62,32 @@ class NeuralNetwork:
       for neuronIndex in range(len(self.network[layerIndex])):
         wDelta = eta * layersInputs[layerIndex] * deltas[layerIndex][neuronIndex]
         self.network[layerIndex][neuronIndex].w += wDelta
+  
+  def learnStep2(self, xIn, dOut, eta=0.1, beta=1):
+    outputs = self.classify(xIn, withAllOutputs=True)
+    outputsPrims = self.classifyPrim(xIn)
+    deltas = [None] * len(self.network) # lista ze zmiennymi pomocniczymi: błąd * fprim, dla kazdego z neurona w poszczególnych warstwach
+    
+    # obliczenia dla wartwy output
+    deltas[-1] = (dOut - outputs[-1])*beta
+
+    # propagacja błędów
+    for layerIndex in reversed(range(len(self.network)-1)):
+      errors = [None] * len(self.network[layerIndex]) # błedy dla kazdego neurona w layerIndex warstwie
+      for neuronIndex in range(len(self.network[layerIndex])):
+        wagi = np.array([neuron.w[neuronIndex+1] for neuron in self.network[layerIndex+1]])
+        errors[neuronIndex] = np.sum(deltas[layerIndex+1]*wagi)
+
+      deltas[layerIndex] = np.array(errors)*beta*beta*(1-np.power(outputs[layerIndex][1:],2))
+    
+    xIn = np.insert(xIn,0,self.layersx0s[0])
+    layersInputs = np.insert(outputs,0,None)[:-1]
+    layersInputs[0] = xIn
+    # poprawianie wag w[warstwa,neuron] += eta*deltas[warstwa,neuron]*layersInputs[warstwa]
+    for layerIndex in range(len(self.network)):
+      for neuronIndex in range(len(self.network[layerIndex])):
+        wDelta = eta * layersInputs[layerIndex] * deltas[layerIndex][neuronIndex]
+        self.network[layerIndex][neuronIndex].w += wDelta
 
   # xk - array wektorów uczących
   # dk - array wartości oczekiwanych
@@ -70,6 +96,11 @@ class NeuralNetwork:
     for i in range(iterations):
       for (x,d) in zip(xk,dk):
         self.learnStep(x, d, eta)
+  
+  def learn2(self, xk, dk, eta=0.1, iterations=15000):
+    for i in range(iterations):
+      for (x,d) in zip(xk,dk):
+        self.learnStep2(x, d, eta, 1)
 
   def __repr__(self):
     s = ""
