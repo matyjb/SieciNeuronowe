@@ -1,5 +1,5 @@
 import numpy as np
-from neuralNetwork import NeuralNetwork
+from NeuralNetwork import NeuralNetwork
 from functions import Functions
 
 print("###########################################")
@@ -43,16 +43,25 @@ w10 = [0.04, -0.43,  0.48]
 
 w = np.array([[w00,w01],[w10]])
 x0s = np.array([1,1])
-nn = NeuralNetwork(w, layersx0s=x0s, f=Functions.SINUS, alpha=alpha)
 
 print("--przed uczeniem--")
+nn = NeuralNetwork(w, layersx0s=x0s, f=Functions.SINUS, alpha=alpha)
 print(nn)
 
 xk = np.array([[1,0],[0,1],[0,0],[1,1]])
 dk = np.array([ [1] , [1] , [0] , [0] ])
-nn.learn(xk,dk,eta,iterations)
 
-print("--po uczeniu ("+str(iterations)+" iteracji)--")
+print("\n--po uczeniu ("+str(iterations)+" iteracji) cząstkowym--")
+nn.learn(xk,dk,eta,iterations)
+print(nn)
+# #testing
+for i in range(4):
+  print(xk[i]," => ",nn.classify(xk[i]))
+
+
+nn = NeuralNetwork(w, layersx0s=x0s, f=Functions.SINUS, alpha=alpha)
+print("\n--po uczeniu ("+str(iterations*4)+" iteracji) całkowitym--")
+nn.learn(xk,dk,eta,iterations*4, False)
 print(nn)
 # #testing
 for i in range(4):

@@ -6,6 +6,7 @@ from functions import Functions
 # http://edu.pjwstk.edu.pl/wyklady/nai/scb/wyklad3/w3.htm
 # http://www.neurosoft.edu.pl/media/pdf/jbartman/sztuczna_inteligencja/NTI%20cwiczenie_5.pdf
 # http://www-users.mat.umk.pl/~philip/propagacja2.pdf
+# http://www-users.mat.umk.pl/~piersaj/www/contents/teaching/wsn2013/wsn-notatki.pdf
 
 class NeuralNetwork:
   # w - lista z wektorami wag dla poszczególnych perceptronów w poszczególnych warstwach zaczynająć od inputa
@@ -37,7 +38,7 @@ class NeuralNetwork:
 
     return prims
 
-  def learnStep(self, xIn, dOut, eta=0.1):
+  def _backPropGetWDeltas(self, xIn, dOut, eta=0.1):
     outputs = self.classify(xIn, withAllOutputs=True)
     outputsPrims = self.classifyPrim(xIn)
     deltas = [None] * len(self.network) # lista ze zmiennymi pomocniczymi: błąd * fprim, dla kazdego z neurona w poszczególnych warstwach
@@ -57,19 +58,41 @@ class NeuralNetwork:
     xIn = np.insert(xIn,0,self.layersx0s[0])
     layersInputs = np.insert(outputs,0,None)[:-1]
     layersInputs[0] = xIn
-    # poprawianie wag w[warstwa,neuron] += eta*deltas[warstwa,neuron]*layersInputs[warstwa]
+    # wyliczanie zmian wag wDelta[warstwa,neuron] += eta*deltas[warstwa,neuron]*layersInputs[warstwa]
+    wDeltas = []
+    for layerIndex in range(len(self.network)):
+      tmp = []
+      for neuronIndex in range(len(self.network[layerIndex])):
+        tmp.append(eta * layersInputs[layerIndex] * deltas[layerIndex][neuronIndex])
+      wDeltas.append(np.array(tmp))
+    return np.array(wDeltas)
+    
+
+  # wDelta - zmiany wag w poszczególnych warstwach w poszczególnych neuronach
+  def _addWDelta(self, wDeltas):
     for layerIndex in range(len(self.network)):
       for neuronIndex in range(len(self.network[layerIndex])):
-        wDelta = eta * layersInputs[layerIndex] * deltas[layerIndex][neuronIndex]
-        self.network[layerIndex][neuronIndex].w += wDelta
+        self.network[layerIndex][neuronIndex].w += wDeltas[layerIndex][neuronIndex]
 
   # xk - array wektorów uczących
   # dk - array wartości oczekiwanych
   # eta - stała uczenia
-  def learn(self, xk, dk, eta=0.1, iterations=15000):
+  # mode - energia całkowita/cząstkowa [True/False]
+  def learn(self, xk, dk, eta=0.1, iterations=15000, mode=True):
     for i in range(iterations):
-      for (x,d) in zip(xk,dk):
-        self.learnStep(x, d, eta)
+      if mode:
+        # całkowita
+        for (x,d) in zip(xk,dk):
+          wDeltas = self._backPropGetWDeltas(x,d,eta)
+          self._addWDelta(wDeltas)
+      else:
+        # cząstkowa
+        wDeltasSum = self._backPropGetWDeltas(xk[0],dk[0],eta)
+        for (x,d) in zip(xk[1:],dk[1:]):
+          wDeltasSum += self._backPropGetWDeltas(x,d,eta)
+        self._addWDelta(wDeltasSum)
+
+
 
   def __repr__(self):
     s = ""
