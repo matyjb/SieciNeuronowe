@@ -48,8 +48,8 @@ print("--przed uczeniem--")
 nn = NeuralNetwork(w, layersx0s=x0s, f=Functions.SINUS, alpha=alpha)
 print(nn)
 
-xk = np.array([[1,0],[0,1],[0,0],[1,1]])
-dk = np.array([ [1] , [1] , [0] , [0] ])
+xk = np.array([[0,0],[0,1],[1,0],[1,1]])
+dk = np.array([ [0] , [1] , [1] , [0] ])
 
 print("\n--po uczeniu ("+str(iterations)+" iteracji) cząstkowym--")
 nn.learn(xk,dk,eta,iterations)
