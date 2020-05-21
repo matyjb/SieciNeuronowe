@@ -2,12 +2,6 @@ import numpy as np
 from perceptron import Perceptron
 from functions import Functions
 
-# robione przy pomocy:
-# http://edu.pjwstk.edu.pl/wyklady/nai/scb/wyklad3/w3.htm
-# http://www.neurosoft.edu.pl/media/pdf/jbartman/sztuczna_inteligencja/NTI%20cwiczenie_5.pdf
-# http://www-users.mat.umk.pl/~philip/propagacja2.pdf
-# http://www-users.mat.umk.pl/~piersaj/www/contents/teaching/wsn2013/wsn-notatki.pdf
-
 class NeuralNetwork:
   # w - lista z wektorami wag dla poszczególnych perceptronów w poszczególnych warstwach zaczynająć od inputa
   def __init__(self, w, layersx0s=None, f=Functions.SINUS, alpha=1):

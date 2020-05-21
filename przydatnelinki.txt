@@ -1,0 +1,6 @@
+
+# robione przy pomocy:
+# http://edu.pjwstk.edu.pl/wyklady/nai/scb/wyklad3/w3.htm
+# http://www.neurosoft.edu.pl/media/pdf/jbartman/sztuczna_inteligencja/NTI%20cwiczenie_5.pdf
+# http://www-users.mat.umk.pl/~philip/propagacja2.pdf
+# http://www-users.mat.umk.pl/~piersaj/www/contents/teaching/wsn2013/wsn-notatki.pdf

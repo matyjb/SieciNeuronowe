@@ -61,23 +61,6 @@ class Hopfield:
     else:
       return self.classify(v, t+1, debug, x)
   
-
-
-  # dobiera wagi sieci regułą Hebba
-  # xk - lista wektorów uczących o tej samej N długości
-  # resetuje wektor b na zera
-  def hebb(self,xk):
-    N = len(xk[0])
-    K = len(xk)
-    neww = np.zeros((N,N))
-    for i in range(N):
-      for j in range(N):
-        if(i!=j):
-          neww[i,j] = sum([xk[k,i] * xk[k,j] for k in range(K)])
-    self.w = np.matrix(neww / N)
-    self.b = np.zeros(N)
-
-
   def __repr__(self):
     return "Hopfield | " + str(np.size(self.w, axis=0)) + " wejść \t| tryb: "+str(self.mode)+" \t| funkcja aktywacji: "+self.fname+"\n wagi = \n" + str(self.w)
   def __str__(self):
