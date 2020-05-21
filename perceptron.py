@@ -11,6 +11,8 @@ class Perceptron:
     self.w = w
     self.fname = f[0]
     self.f = lambda x: f[1](x,alpha)
+    
+    # uzywane w NeuralNetwork
     self.fprim = lambda x: f[2](x,alpha)
 
   def getZ(self, xIn):
@@ -19,6 +21,7 @@ class Perceptron:
   def calcOutput(self,xIn):
     return self.f(self.getZ(xIn))
 
+  # uzywane w NeuralNetwork
   def calcOutputPrim(self,xIn):
     return self.fprim(self.getZ(xIn))
 
