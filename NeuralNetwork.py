@@ -87,13 +87,20 @@ class NeuralNetwork:
       else:
         # całkowita
         wDeltasSum = self._backPropGetWDeltas(xk[0],dk[0],eta)
+        energiaSum = 0
         for (x,d) in zip(xk[1:],dk[1:]):
+          if i % coIle == 0:
+            energiaSum += 1/2*np.sum(np.power((d - self.classify(x)),2))
+
           wDeltasSum += self._backPropGetWDeltas(x,d,eta)
+
         if i % coIle == 0:
-          energia.append(1/2*np.sum(np.power((dk[0] - self.classify(xk[0])),2)))
+          energia.append(energiaSum)
+          
         self._addWDelta(wDeltasSum)
     
     plt.plot(np.array(range(len(energia)))*coIle,energia)
+    plt.title("energia cząstkowa" if mode else "energia całkowita")
     plt.xlabel("iteracja")
     plt.ylabel("energia")
     plt.show()
