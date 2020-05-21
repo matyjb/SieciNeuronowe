@@ -1,6 +1,7 @@
 import numpy as np
 from perceptron import Perceptron
 from functions import Functions
+import matplotlib.pyplot as plt
 
 class NeuralNetwork:
   # w - lista z wektorami wag dla poszczególnych perceptronów w poszczególnych warstwach zaczynająć od inputa
@@ -73,10 +74,14 @@ class NeuralNetwork:
   # eta - stała uczenia
   # mode - energia całkowita/cząstkowa [False/True]
   def learn(self, xk, dk, eta=0.1, iterations=15000, mode=True):
+    coIle = 500
+    energia = []
     for i in range(iterations):
       if mode:
         # cząstkowa
         for (x,d) in zip(xk,dk):
+          if i % coIle == 0:
+            energia.append(1/2*np.sum(np.power((d - self.classify(x)),2)))
           wDeltas = self._backPropGetWDeltas(x,d,eta)
           self._addWDelta(wDeltas)
       else:
@@ -84,7 +89,14 @@ class NeuralNetwork:
         wDeltasSum = self._backPropGetWDeltas(xk[0],dk[0],eta)
         for (x,d) in zip(xk[1:],dk[1:]):
           wDeltasSum += self._backPropGetWDeltas(x,d,eta)
+        if i % coIle == 0:
+          energia.append(1/2*np.sum(np.power((dk[0] - self.classify(xk[0])),2)))
         self._addWDelta(wDeltasSum)
+    
+    plt.plot(np.array(range(len(energia)))*coIle,energia)
+    plt.xlabel("iteracja")
+    plt.ylabel("energia")
+    plt.show()
 
 
 
