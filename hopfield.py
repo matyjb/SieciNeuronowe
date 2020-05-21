@@ -27,11 +27,9 @@ class Hopfield:
     self.mode = mode
 
   # wylicza ?klasyfikacje? zadanego wektora
-  def classify(self, x, t=0, debug=False, xtminus2=None):
-    if t==40:
-      return (x,t)
+  def classify(self, x, t=1, debug=False, xtminus2=None):
     
-    if debug and t==0:
+    if debug and t==1:
       print("%4s | %20s | %40s | %20s" % ("czas","v","u","nowe v"))
 
 
