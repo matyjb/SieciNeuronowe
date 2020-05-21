@@ -7,7 +7,7 @@
 a)
 (i)
 
-cykl |  czas |        wektor ucz¹cy |                 waga |       z |       y |       d |            nowa waga
+cykl |  czas |        wektor uczÄ…cy |                 waga |       z |       y |       d |            nowa waga
    0 |     0 |              [1 0 0] |              [1 1 1] |       1 |       1 |       0 |              [0 1 1]
    0 |     1 |              [1 0 1] |              [0 1 1] |       1 |       1 |       0 |           [-1  1  0]
    0 |     2 |              [1 1 0] |           [-1  1  0] |       0 |       0 |       1 |              [0 2 0]
@@ -27,7 +27,7 @@ cykl |  czas |        wektor ucz¹cy |                 waga |       z |       y |
 
 (ii)
 
-cykl |  czas |        wektor ucz¹cy |                 waga |       z |       y |       d |            nowa waga
+cykl |  czas |        wektor uczÄ…cy |                 waga |       z |       y |       d |            nowa waga
    0 |     0 |              [1 0 0] |  [-0.12  0.4   0.65] |   -0.12 |       0 |       0 |  [-0.12  0.4   0.65]
    0 |     1 |              [1 0 1] |  [-0.12  0.4   0.65] |    0.53 |       1 |       0 |  [-0.22  0.4   0.55]
    0 |     2 |              [1 1 0] |  [-0.22  0.4   0.55] |    0.18 |       1 |       1 |  [-0.22  0.4   0.55]
@@ -94,7 +94,7 @@ cykl |            nowa waga
 
 sync)
 
-Hopfield | 3 wejœæ 	| tryb: synchroniczny 	| funkcja aktywacji: Step1-1
+Hopfield | 3 wejÅ›Ä‡ 	| tryb: synchroniczny 	| funkcja aktywacji: Step1-1
  wagi = 
 [[ 0.         -0.66666667  0.66666667]
  [-0.66666667  0.         -0.66666667]
@@ -135,7 +135,7 @@ czas |                    v |                                        u |        
 
 async)
 
-Hopfield | 3 wejœæ 	| tryb: asynchroniczny 	| funkcja aktywacji: Step1-1
+Hopfield | 3 wejÅ›Ä‡ 	| tryb: asynchroniczny 	| funkcja aktywacji: Step1-1
  wagi = 
 [[ 0.         -0.66666667  0.66666667]
  [-0.66666667  0.         -0.66666667]
@@ -218,26 +218,26 @@ czas |                    v |                                        u |        
 [Perceptron | wagi = [0.04, -0.43, 0.48] | funkcja: Sinusoidalna]
 stale wejscia w warstwach: [1 1]
 
---po uczeniu (5000 iteracji) cz¹stkowym--
+--po uczeniu (5000 iteracji) czÄ…stkowym--
 >warstwa 0
-[ Perceptron | wagi = [ 3.19959088 -6.16798553  6.12785469] | funkcja: Sinusoidalna
- Perceptron | wagi = [-2.75470725 -5.38904654  5.11710946] | funkcja: Sinusoidalna]
+[ Perceptron | wagi = [ 2.31684544 -5.82966381 -5.84209879] | funkcja: Sinusoidalna
+ Perceptron | wagi = [ 6.9070519  -4.64014765 -4.64185784] | funkcja: Sinusoidalna]
 >warstwa 1
-[ Perceptron | wagi = [ 3.85652867 -8.29019734  8.81341443] | funkcja: Sinusoidalna]
+[ Perceptron | wagi = [-4.1018615  -9.10431611  8.76251957] | funkcja: Sinusoidalna]
 stale wejscia w warstwach: [1 1]
-[1 0]  =>  [ 0.96934756]
-[0 1]  =>  [ 0.97396111]
-[0 0]  =>  [ 0.02707703]
-[1 1]  =>  [ 0.02439717]
+[0 0]  =>  [ 0.02569519]
+[0 1]  =>  [ 0.97277897]
+[1 0]  =>  [ 0.97272893]
+[1 1]  =>  [ 0.03366878]
 
---po uczeniu (20000 iteracji) ca³kowitym--
+--po uczeniu (20000 iteracji) caÅ‚kowitym--
 >warstwa 0
 [ Perceptron | wagi = [  7.71852804 -11.19151526   6.41822791] | funkcja: Sinusoidalna
  Perceptron | wagi = [-1.62884625 -6.39382738  3.94977566] | funkcja: Sinusoidalna]
 >warstwa 1
 [ Perceptron | wagi = [ 4.08246776 -9.02942988  9.23938194] | funkcja: Sinusoidalna]
 stale wejscia w warstwach: [1 1]
-[1 0]  =>  [ 0.97841204]
-[0 1]  =>  [ 0.96971605]
 [0 0]  =>  [ 0.03143791]
+[0 1]  =>  [ 0.96971605]
+[1 0]  =>  [ 0.97841204]
 [1 1]  =>  [ 0.01285428]
